@@ -4,14 +4,13 @@ import math
 
 class Particle():
     def __init__(self):
-        self.dt = 0.01
-        self.deltat = []
         self.xlista = []
         self.ylista = []
         self.vxlista = []
         self.vylista = []
+        self.t = []
+        self.ax = []
         self.g = -9.81
-        self.deltat.append(self.dt)
 
     def set_initial_conditions(self,v0,theta_t,x0,y0):
         self.k = theta_t
@@ -19,6 +18,14 @@ class Particle():
         self.v0 = v0
         self.x0 = x0
         self.y0 = y0
+        self.v0y = self.v0*math.sin(self.theta)
+        self.v0x = self.v0*math.cos(self.theta)
+        self.t.append(0)
+        self.ax.append(0)
+        self.xlista.append(0)
+        self.ylista.append(0)
+        self.vylista.append(self.v0y)
+        self.vxlista.append(self.v0x)
 
     def reset(self):
         self.__init__()
@@ -27,74 +34,35 @@ class Particle():
         self.y0 = 0
         self.theta = 0
 
-    def __move(self):
-        self.v0x = self.v0*math.cos(self.theta)
-        self.v0y = self.v0*math.sin(self.theta)
-        for i in range(1000):
-            self.x0 = self.x0 + self.v0x*self.dt
-            self.v0y = self.v0y + self.g*self.dt
-            self.y0 = self.y0 + self.v0y*self.dt
-            if self.y0<=0:
-                break
-            self.xlista.append(self.x0)
-            self.ylista.append(self.y0)
+    def __move(self, dt):
+        self.t.append(self.t[-1]+dt)
+        self.vylista.append(self.vylista[-1]+self.g*dt)
+        self.vxlista.append(self.vxlista[-1]+self.ax[-1]*dt)
+        self.xlista.append(self.xlista[-1]+self.vxlista[-1]*dt)
+        self.ylista.append(self.ylista[-1]+self.vylista[-1]*dt)
+        
 
-    def range(self):
-        x = self.x0
-        v = self.v0
-        self.__move()
-        self.d = self.x0 - x
-        print("Za v={} i kut{} domet je{}".format(v,self.k,(self.d)))
-
+    def range(self,dt):
+        while self.ylista[-1]>=0:
+            self.__move(dt)
+        return self.xlista[-1]
+        
 
     def range_analitic(self):
         g = 9.81
         self.kut = math.sin(2*self.theta)
         self.X = ((self.v0**2)*self.kut) / g
 
-    def relative_error(self):
-        self.range_analitic()
-        self.range()
-        E = ((self.X - self.d)/self.X)*100
-        print("Relativna pogreska je {}".format(E))
+    
+    def printInfo(self):
+        while self.ylista[-1]>=0:
+            self.__move()
+        print("Za v={} i kut {}, domet je {}.".format(self.v0,self.k,self.xlista[-1]))
 
-    def Relative_error(self):
-        v = self.v0
-        k = self.theta
-        vy = self.v0 * math.sin(self.theta)
-        vx = self.v0 * math.cos(self.theta)
-        x = self.x0 
-        y = self.y0
-        x_lista = []
-        self.Dt = 0
-        self.T = []
-        self.re = []
-        for i in range(1000):
-            self.Dt = self.Dt + self.dt
-            x = x + vx*self.Dt
-            vy = vy + self.g*self.Dt
-            y = y + vy*self.Dt
-            if y <= 0:
-               break
-            self.T.append(self.Dt)
-            x_lista.append(x)
-        self.range_analitic()
-        a = self.x0
-        self.__move()
-        x_lista = [x - a for x in x_lista]
-        x_lista = [-x for x in x_lista]
-        self.re = list(map(lambda x: x - self.X, x_lista))
-        self.re = list(map(lambda x: x/self.X, self.re))
-        self.re = [-x for x in self.re]
-        self.re = list(map(lambda x: x*100, self.re))
-        
+
     def plot_trajectory(self):
         plt.plot(self.xlista,self.ylista,"r")
         plt.show()
         
-    def plot_trayectory1(self):
-        plt.plot(self.T, self.re, 'b')
-        plt.xlabel("dt [s]")
-        plt.ylabel("absolute relative error [%]")
-        plt.title("Relativna pogreska")
-        plt.show()
+    
+        
