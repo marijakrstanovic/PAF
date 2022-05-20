@@ -4,18 +4,20 @@ import math
 
 class Harmonic_oscillator():
     def __init__(self):
-        self.x = []
-        self.v = []
+        self.xlista = []
+        self.vlista = []
         self.t = []
         self.a = []
 
-    def set_initial_conditions(self,m,k,v,dt):
+    def set_initial_conditions(self,m,k,x,v,dt):
         self.m = m
         self.k = k
-        self.v.append(v)
+        self.v = v
+        self.x = x
+        self.vlista.append(v)
         self.t.append(0)
         self.a.append(0)
-        self.x.append(0)
+        self.xlista.append(0)
         self.dt = dt
         
 
@@ -32,11 +34,12 @@ class Harmonic_oscillator():
         #x=x+v*dt
         n = int(t/self.dt)
         for i in range(n):
-            self.a.append((-(self.k/self.m))*self.x[-1])
-            self.v.append(self.v[-1]+self.a[-1]*self.dt)
-            self.x.append(self.x[-1]+self.v[-1]*self.dt)
             self.t.append(self.t[-1]+self.dt)
-        return (self.t,self.x)
+            self.a.append((-(self.k/self.m))*self.xlista[-1])
+            self.vlista.append(self.vlista[-1]+self.a[-1]*self.dt)
+            self.xlista.append(self.xlista[-1]+self.vlista[-1]*self.dt)
+            #self.t.append(self.t[-1]+self.dt)
+        return (self.t,self.xlista)
         
 
     def graf(self):
@@ -55,16 +58,18 @@ class Harmonic_oscillator():
     
 
     def period(self,t):
-        self.t,self.x = self.oscillate(t)
-        g = max(self.x)
-        a = self.x.index(g)
-        s = min(self.x)
-        b = self.x.index(s)
-        c = self.t[a]
-        d = self.t[b]
-        T = abs(c-d)*2
-        print("Numericki izracun perioda je {}".format(T))
+        dt = self.dt
+        T = 0
+        self.oscillate(t)
+        for i in self.xlista:
+                if i*self.xlista[-1] < 0:
+                    T += dt
+                elif T!= 0:
+                    break
+        print(2*T)
+        
 
     def analiticki_period(self):
         T = 2*math.pi*math.sqrt(self.m/self.k)
         print("Analiticki izracun perioda iznosi {}".format(T))
+    

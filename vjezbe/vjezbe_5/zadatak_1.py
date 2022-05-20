@@ -15,12 +15,12 @@ h1.oscillate(5)
 plt.scatter(h1.t,h1.x,s = 2,c="r", label="dt=0.01")
 
 
-h1.set_initial_conditions(2,10,5,0.1)
+h1.set_initial_conditions(2,10,0,5,0.1)
 h1.oscillate(5)
 plt.scatter(h1.t,h1.x, s = 2, c = "b", label = "dt = 0.1")
 
 
-h1.set_initial_conditions(2,10,5,0.05)
+h1.set_initial_conditions(2,10,0,5,0.05)
 h1.oscillate(5)
 plt.scatter(h1.t,h1.x, s = 2, c = "g", label = "dt = 0.05")
 
