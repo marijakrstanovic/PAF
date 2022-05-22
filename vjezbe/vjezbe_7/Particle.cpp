@@ -1,43 +1,40 @@
+#include <iostream>
 #include <math.h>
-#include <Particle.h>
-#define _USE_MATH_DEFINES
+#include "Particle.h"
 
-void Particle::move(float dt){
-    vy = vy - 9.81*dt;
+void Particle::move(){
+    vy = vy + g * dt;
     x = x + vx * dt;
     y = y + vy * dt;
-};
+    t = t + dt;
 
-void Particle::return_to_start(){
-    vx = v0*cos(theta);
-    vy = v0*sin(theta);
-    x = x0;
-    y = y0;
-};
+}
 
-Particle::Particle(float a, float b, float c, float d){
-    v0 = a;
-    theta = (b/180)*M_PI;
-    x0 = c;
-    y0 = d;
-    vx = v0*cos(theta);
-    vy = v0*sin(theta);
-    x = x0;
-    y = y0;
-};
-
-float Particle::range(float dt){
-    while(y > 0){
-        move(dt);
+double Particle::range(){
+    while(y >= 0){
+        move();
     }
-    return x - x0;
-};
+    std::cout << x << std::endl;
+    return x;
+}
 
-float Particle::time(float dt){
-    float t = 0;
-    while(y > 0){
-        move(dt);
-        t = t + dt;
+double Particle::time(){
+    while(y >= 0){
+        move();
     }
+    std::cout << t << std::endl;
     return t;
+}
+
+Particle::Particle(double v, double theta, double x0, double y0)
+{
+    t = 0;
+
+    v = v;
+    theta = theta;
+    x = x0; 
+    y = y0;
+
+    vy = sin(theta) * v;
+    vx = cos(theta) * v;  
 }

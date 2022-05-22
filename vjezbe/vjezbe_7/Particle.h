@@ -1,25 +1,22 @@
-#include <math.h>
+#include <cmath>
 
 class Particle{
+
     private:
-        float v0;
-        float theta;
-        float x0;
-        float y0;
-        float vx;
-        float vy;
-        float x;
-        float y;
-        
-        void move(float dt);
 
-        void return_to_start();
+    double t, x, y, vx, vy;
+    double dt = 0.01;
+    double g = -9.81;
+
+
+    void move();
     
-    public:
-        Particle (float a, float b, float c, float d);
-        ~Particle();
+    public: 
 
-        float range(float dt);
+    Particle(double v, double theta, double x0, double y0);
 
-        float time(float dt);
+    double range();
+    double time();
+  
+
 };
